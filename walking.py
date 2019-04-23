@@ -70,6 +70,34 @@ class Game:
 
                 pygame.display.flip()
 
+        elif self.character.x <= 0:
+            next_clock = pygame.time.Clock()
+            frame_count = 0
+            line_x = 0
+            while True:
+                frame_count += 1
+                self.screen.fill((0,0,0))
+                
+                for i in range(10):
+                    pygame.draw.rect(self.screen,(255,255,0), pygame.Rect(line_x,150,50,25))
+                    line_x += 100
+                
+                self.character.x += 3
+                line_x = frame_count * 3
+                self.character.blitme(self.screen)
+                next_clock.tick(120)
+                if self.character.x <= WIDTH:
+                    break
+
+                pygame.display.flip()
+
+        elif self.character.y <=0:
+             self.character.y = 0
+
+        # elif self.character.y >= HEIGHT - self.character.peng_anim[0].get_size():
+        #     self.character.y = HEIGHT
+        
+
     def draw_bg(self):
         if self.curr_type == 0:
             # draw lines on road
