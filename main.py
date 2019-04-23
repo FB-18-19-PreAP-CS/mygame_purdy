@@ -14,6 +14,8 @@ class Game:
         self.clock = pygame.time.Clock()
         self.bgmusic = pygame.mixer.Sound('/home/purdy/PreAPCS/mygame_purdy/sounds/main_theme.ogg')
         self.character = Penguin()
+        self.room_types = ['street','forrest']
+        self.curr_type = 0  
 
     def start(self):
         done = False
@@ -36,6 +38,7 @@ class Game:
             if pressed[pygame.K_RIGHT]:
                 self.character.walk('right')
 
+            self.draw_bg()
             self.character.blitme(self.screen)
             pygame.display.flip()
 
@@ -46,9 +49,35 @@ class Game:
     ## Check if penguin has reached the edge of the screen
     ## TODO: Add animation in each direction
     def check_edge(self):
-        if self.penguin.x > WIDTH:
+        if self.character.x > WIDTH:
             next_clock = pygame.time.Clock()
-            next = True
+            frame_count = 0
+            line_x = 0
+            while True:
+                frame_count += 1
+                self.screen.fill((0,0,0))
+                
+                for i in range(10):
+                    pygame.draw.rect(self.screen,(255,255,0), pygame.Rect(line_x,150,50,25))
+                    line_x += 100
+                
+                self.character.x -= 3
+                line_x = frame_count * -3
+                self.character.blitme(self.screen)
+                next_clock.tick(120)
+                if self.character.x == 0:
+                    break
+
+                pygame.display.flip()
+
+    def draw_bg(self):
+        if self.curr_type == 0:
+            # draw lines on road
+            line_x = 0
+            for i in range(10):
+                pygame.draw.rect(self.screen,(255,255,0), pygame.Rect(line_x,HEIGHT//2,50,25))
+                line_x += 100
+
 
     
 
