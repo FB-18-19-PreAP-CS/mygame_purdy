@@ -19,14 +19,38 @@ class Game:
         done = False
         self.bgmusic.play(-1)
         while not done:
-            pygame.display.flip()
+            self.screen.fill((0,0,0))
+            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     done = True
 
+            pressed = pygame.key.get_pressed()
+            if pressed[pygame.K_UP]:
+                self.character.walk('up')
+        
+            if pressed[pygame.K_DOWN]:
+                self.character.walk('down')
+            if pressed[pygame.K_LEFT]:
+                self.character.walk('left')
+            if pressed[pygame.K_RIGHT]:
+                self.character.walk('right')
+
             self.character.blitme(self.screen)
+            pygame.display.flip()
+
+            self.check_edge()
 
             self.clock.tick(60)
+
+    ## Check if penguin has reached the edge of the screen
+    ## TODO: Add animation in each direction
+    def check_edge(self):
+        if self.penguin.x > WIDTH:
+            next_clock = pygame.time.Clock()
+            next = True
+
+    
 
 
 class Penguin:
@@ -41,11 +65,31 @@ class Penguin:
 
     
     def blitme(self,screen):
+        f = int(self.frame)%4
         if self.orientation == 'right':
-            screen.blit(self.peng_anim[self.frame],(self.x,self.y))
-        elif orientation == 'left':
+            screen.blit(self.peng_anim[f],(self.x,self.y))
+        elif self.orientation == 'left':
             # https://stackoverflow.com/questions/45601109/how-do-i-flip-an-image-horizontally-in-pygame
-            screen.blit(pygame.transform(self.peng_anim[self.frame],true,false),(self.x,self.y))
+            screen.blit(pygame.transform.flip(self.peng_anim[f],True,False),(self.x,self.y))
+
+    def walk(self, direction):
+        if direction == 'up':
+            self.y -= 3
+            self.frame += .25
+        elif direction == 'down':
+            self.y += 3
+            self.frame += .25
+        elif direction == 'left':
+            self.orientation = 'left'
+            self.x -= 3
+            self.frame += .25
+        elif direction == 'right':
+            self.orientation = 'right'
+            self.x += 3
+            self.frame += .25
+
+
+
     
         
 
