@@ -1,4 +1,5 @@
 import pygame
+from random import randint
 
 WIDTH = 400
 HEIGHT = 300
@@ -14,15 +15,17 @@ class Game:
         self.clock = pygame.time.Clock()
         self.bgmusic = pygame.mixer.Sound('/home/purdy/PreAPCS/mygame_purdy/sounds/main_theme.ogg')
         self.character = Penguin()
+        self.fish = pygame.sprite.Group()
         self.room_types = ['street','forrest']
         self.curr_type = 0  
 
     def start(self):
         done = False
+        for i in range(3):
+            self.fish.add(Fish())
         self.bgmusic.play(-1)
         while not done:
             self.screen.fill((0,0,0))
-            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     done = True
@@ -38,7 +41,22 @@ class Game:
             if pressed[pygame.K_RIGHT]:
                 self.character.walk('right')
 
+
+            
+
             self.draw_bg()
+            #self.fish.draw(self.screen)
+            for f in self.fish:
+                # hit = pygame.sprite.collide_rect(self.character, f)
+                # if hit:
+                #     self.fish.remove(f)
+                #     self.fish.append(Fish())
+                f.blitme(self.screen)
+
+
+            # for f in pygame.sprite.spritecollide(self.character,self.fish,1):    
+            #     f.kill()
+
             self.character.blitme(self.screen)
             pygame.display.flip()
 
@@ -96,7 +114,8 @@ class Game:
 
         # elif self.character.y >= HEIGHT - self.character.peng_anim[0].get_size():
         #     self.character.y = HEIGHT
-        
+    
+
 
     def draw_bg(self):
         if self.curr_type == 0:
@@ -107,20 +126,37 @@ class Game:
                 line_x += 100
 
 
-    
-
-
-class Penguin:
+class Fish(pygame.sprite.Sprite):
     def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = randint(0,WIDTH)
+        self.y = randint(0,HEIGHT)
+        self.image = pygame.image.load('/home/purdy/PreAPCS/mygame_purdy/images/fish.png')
+        self.rect = self.image.get_rect()
+        #print(self.rect)
+    
+    def blitme(self, screen):
+        screen.blit(self.image,(self.x,self.y))
+
+
+class Penguin(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
         self.x = 30
         self.y = 30
         self.orientation = 'right'
         self.peng_anim = []
         self.frame = 0
+        
         for i in range(4):
             self.peng_anim.append(pygame.image.load(f'/home/purdy/PreAPCS/mygame_purdy/images/penguin_walk0{i+1}.png'))
+        self.rect = self.peng_anim[0].get_rect()
+        #print(self.rect)
 
     
+    def is_collided_with(self, sprite):
+        return self.rect.colliderect()
+
     def blitme(self,screen):
         f = int(self.frame)%4
         if self.orientation == 'right':
