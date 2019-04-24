@@ -144,6 +144,7 @@ class Fish(pygame.sprite.Sprite):
 
         self.image = pygame.image.load('./images/fish.png')
         self.rect = self.image.get_rect()
+        self.rect = self.rect.inflate(-50,-50)
         self.rect.x = randint(self.image.get_size()[0],WIDTH-self.image.get_size()[0])
         self.rect.y = randint(0,HEIGHT-self.image.get_size()[1])
 
@@ -163,9 +164,10 @@ class Penguin(pygame.sprite.Sprite):
         for i in range(4):
             self.peng_anim.append(pygame.image.load(f'./images/penguin_walk0{i+1}.png'))
         self.rect = self.peng_anim[0].get_rect()
+        self.rect = self.rect.inflate(-50,-50)
         self.rect.x = 30
         self.rect.y = 30
-        self.hunger = 100
+        self.hunger = 0
         #print(self.rect)
 
 
