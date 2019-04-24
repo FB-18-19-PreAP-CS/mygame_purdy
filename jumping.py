@@ -7,10 +7,10 @@ class Player(pygame.sprite.Sprite):
         self.player_image = pygame.image.load('./images/penguin_walk01.png')
         self.rect = self.player_image.get_rect()
         
-        self.x = startX
-        self.y = startY - self.player_image.get_size()[1] # make him stand on top of the ground
+        self.rect.x = startX
+        self.rect.y = startY - self.player_image.get_size()[1] # make him stand on top of the ground
 
-        self.ground = self.y
+        self.ground = self.rect.y
         
 
         self.direction = 'right'
@@ -28,14 +28,14 @@ class Player(pygame.sprite.Sprite):
 
         self.on_ground = True # needed if multiple platforms...player could be falling!
         self.is_jumping = False
-        self.gravity = .5 # The lower this value, the higher the jump
+        self.gravity = .25 # The lower this value, the higher the jump
         self.velocity = 0
 
     def check_on_ground(self):
-        if self.y >= self.ground:
+        if self.rect.y >= self.ground:
             self.on_ground = True
             self.is_jumping = False
-            self.y = self.ground
+            self.rect.y = self.ground
 
     def blit(self, screen):
         if not self.is_jumping:
@@ -48,27 +48,35 @@ class Player(pygame.sprite.Sprite):
 
             
         if self.direction == 'right':
-            screen.blit(self.player_image,(self.x,self.y))
+            screen.blit(self.player_image,(self.rect.x,self.rect.y))
         elif self.direction == 'left':
-            screen.blit(pygame.transform.flip(self.player_image,True,False),(self.x,self.y))
-        self.rect = self.player_image.get_rect()
+            screen.blit(pygame.transform.flip(self.player_image,True,False),(self.rect.x,self.rect.y))
+        
+        
 
     def walk(self, direction):
         if direction == 'up':
-            self.y -= 3
+            self.rect.y -= 3
             self.frame += .25
         elif direction == 'down':
-            self.y += 3
+            self.rect.y += 3
             self.frame += .25
         elif direction == 'left':
             self.direction = 'left'
-            self.x -= 3
+            self.rect.x -= 3
             self.frame += .25
         elif direction == 'right':
             self.direction = 'right'
-            self.x += 3
+            self.rect.x += 3
             self.frame += .25
+        print(self.rect)
    
+class Block(pygame.sprite.Sprite):
+    def __init__(self, x, y, w, h, color):
+        pygame.sprite.Sprite.__init__(self)
+        self.rect = pygame.Rect(x,y,w,h)
+        self.color = color
+
 
 class JumpGame:
     windowWidth = 640
@@ -83,7 +91,7 @@ class JumpGame:
         pygame.display.set_caption("Jump Demo")
         self.clock = pygame.time.Clock()
         self.player = Player(self.windowWidth//2,self.windowHeight-100)
-        
+        self.block = Block(100,300,64,64,(255,0,0))
 
     def draw_ground(self):
         pygame.draw.rect(self.screen,(0,255,0),pygame.rect.Rect(0,self.windowHeight-100,self.windowWidth,100))
@@ -91,7 +99,7 @@ class JumpGame:
     def start(self):
         while True:
             self.draw_ground()
-            
+            pygame.draw.rect(self.screen, self.block.color, self.block.rect)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -112,9 +120,20 @@ class JumpGame:
             if pressed[pygame.K_RIGHT]:
                 self.player.walk('right')
             
+            if self.player.rect.colliderect(self.block.rect):
+                print('collision')
             if self.player.is_jumping:
-                
-                self.player.y -= self.player.velocity
+                if self.player.velocity > 0:
+                    while self.player.rect.colliderect(self.block.rect):
+                        self.player.rect.y -= 1
+                        self.player.velocity = 0
+                        self.is_jumping = False
+                elif self.player.velocity < 0:
+                    while self.player.rect.colliderect(self.block.rect):
+                        self.player.rect.y += 1
+                        self.player.velocity = 0
+                        self.is_jumping = False
+                self.player.rect.y -= self.player.velocity
                 self.player.velocity -= self.player.gravity 
                 self.player.check_on_ground()
             
