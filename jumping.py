@@ -74,8 +74,11 @@ class JumpGame:
     windowHeight = 480
 
     def __init__(self):
+        pygame.mixer.pre_init(48000,-16,2,2048)
+        pygame.mixer.init()
         pygame.init()
         self.screen = pygame.display.set_mode((self.windowWidth, self.windowHeight))
+        self.jump_sound = pygame.mixer.Sound('./sounds/jump.wav')
         pygame.display.set_caption("Jump Demo")
         self.clock = pygame.time.Clock()
         self.player = Player(self.windowWidth//2,self.windowHeight-100)
@@ -97,6 +100,7 @@ class JumpGame:
 
             if pressed[pygame.K_SPACE] and not self.player.is_jumping and self.player.on_ground:
                 # jump!
+                self.jump_sound.play()
                 self.player.on_ground = False
                 self.player.is_jumping = True
                 self.player.velocity = 8
