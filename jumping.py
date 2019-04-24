@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 class Player(pygame.sprite.Sprite):
     def __init__(self,startX,startY):
