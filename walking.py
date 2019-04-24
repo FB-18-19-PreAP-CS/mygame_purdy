@@ -47,15 +47,9 @@ class Game:
             self.draw_bg()
             #self.fish.draw(self.screen)
             for f in self.fish:
-                # hit = pygame.sprite.collide_rect(self.character, f)
-                # if hit:
-                #     self.fish.remove(f)
-                #     self.fish.append(Fish())
                 f.blitme(self.screen)
 
 
-            # for f in pygame.sprite.spritecollide(self.character,self.fish,1):    
-            #     f.kill()
 
             self.character.blitme(self.screen)
             pygame.display.flip()
@@ -155,7 +149,9 @@ class Penguin(pygame.sprite.Sprite):
 
     
     def is_collided_with(self, sprite):
-        return self.rect.colliderect()
+        if abs(self.x - sprite.x) < 10 and abs(self.y - sprite.y) < 10:
+            return True
+        return False
 
     def blitme(self,screen):
         f = int(self.frame)%4
