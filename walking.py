@@ -18,14 +18,20 @@ class Game:
         self.fish = pygame.sprite.Group()
         self.room_types = ['street','forrest']
         self.curr_type = 0  
+        self.font = pygame.font.SysFont("arial",24)
+
+    def gen_fish(self):
+        for i in range(3):
+            self.fish.add(Fish())
 
     def start(self):
         done = False
-        for i in range(3):
-            self.fish.add(Fish())
+        self.gen_fish()
         self.bgmusic.play(-1)
         while not done:
             self.screen.fill((0,0,0))
+            score_text = self.font.render(f"Hunger: {self.character.hunger}",True,(255,255,255))
+            self.screen.blit(score_text,(0,0))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     done = True
@@ -46,12 +52,19 @@ class Game:
 
             self.draw_bg()
             #self.fish.draw(self.screen)
+            
+
+            for f in self.fish:
+                if self.character.rect.colliderect(f):
+                    self.character.hunger -= 50
+                    self.fish.remove(f)
+
             for f in self.fish:
                 f.blitme(self.screen)
-
-
-
             self.character.blitme(self.screen)
+
+            
+
             pygame.display.flip()
 
             self.check_edge()
@@ -61,7 +74,7 @@ class Game:
     ## Check if penguin has reached the edge of the screen
     ## TODO: Add animation in each direction
     def check_edge(self):
-        if self.character.x > WIDTH:
+        if self.character.rect.x > WIDTH:
             next_clock = pygame.time.Clock()
             frame_count = 0
             line_x = 0
@@ -73,16 +86,21 @@ class Game:
                     pygame.draw.rect(self.screen,(255,255,0), pygame.Rect(line_x,150,50,25))
                     line_x += 100
                 
-                self.character.x -= 3
+                self.character.rect.x -= 3
                 line_x = frame_count * -3
                 self.character.blitme(self.screen)
                 next_clock.tick(120)
-                if self.character.x == 0:
+                if self.character.rect.x == 0:
                     break
 
+                
                 pygame.display.flip()
+                for f in self.fish:
+                    self.fish.remove(f)
 
-        elif self.character.x <= 0:
+                self.gen_fish()
+
+        elif self.character.rect.x <= 0:
             next_clock = pygame.time.Clock()
             frame_count = 0
             line_x = 0
@@ -94,17 +112,17 @@ class Game:
                     pygame.draw.rect(self.screen,(255,255,0), pygame.Rect(line_x,150,50,25))
                     line_x += 100
                 
-                self.character.x += 3
+                self.character.rect.x += 3
                 line_x = frame_count * 3
                 self.character.blitme(self.screen)
                 next_clock.tick(120)
-                if self.character.x <= WIDTH:
+                if self.character.rect.x <= WIDTH:
                     break
 
                 pygame.display.flip()
 
-        elif self.character.y <=0:
-             self.character.y = 0
+        elif self.character.rect.y <=0:
+             self.character.rect.y = 0
 
         # elif self.character.y >= HEIGHT - self.character.peng_anim[0].get_size():
         #     self.character.y = HEIGHT
@@ -123,58 +141,57 @@ class Game:
 class Fish(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.x = randint(0,WIDTH)
-        self.y = randint(0,HEIGHT)
-        self.image = pygame.image.load('/home/purdy/PreAPCS/mygame_purdy/images/fish.png')
+
+        self.image = pygame.image.load('./images/fish.png')
         self.rect = self.image.get_rect()
-        #print(self.rect)
+        self.rect.x = randint(self.image.get_size()[0],WIDTH-self.image.get_size()[0])
+        self.rect.y = randint(0,HEIGHT-self.image.get_size()[1])
+
     
     def blitme(self, screen):
-        screen.blit(self.image,(self.x,self.y))
+        screen.blit(self.image,(self.rect.x,self.rect.y))
 
 
 class Penguin(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.x = 30
-        self.y = 30
+        
         self.orientation = 'right'
         self.peng_anim = []
         self.frame = 0
         
         for i in range(4):
-            self.peng_anim.append(pygame.image.load(f'/home/purdy/PreAPCS/mygame_purdy/images/penguin_walk0{i+1}.png'))
+            self.peng_anim.append(pygame.image.load(f'./images/penguin_walk0{i+1}.png'))
         self.rect = self.peng_anim[0].get_rect()
+        self.rect.x = 30
+        self.rect.y = 30
+        self.hunger = 100
         #print(self.rect)
 
-    
-    def is_collided_with(self, sprite):
-        if abs(self.x - sprite.x) < 10 and abs(self.y - sprite.y) < 10:
-            return True
-        return False
 
     def blitme(self,screen):
         f = int(self.frame)%4
         if self.orientation == 'right':
-            screen.blit(self.peng_anim[f],(self.x,self.y))
+            screen.blit(self.peng_anim[f],(self.rect.x,self.rect.y))
         elif self.orientation == 'left':
             # https://stackoverflow.com/questions/45601109/how-do-i-flip-an-image-horizontally-in-pygame
-            screen.blit(pygame.transform.flip(self.peng_anim[f],True,False),(self.x,self.y))
+            screen.blit(pygame.transform.flip(self.peng_anim[f],True,False),(self.rect.x,self.rect.y))
 
     def walk(self, direction):
+        self.hunger += 1
         if direction == 'up':
-            self.y -= 3
+            self.rect.y -= 3
             self.frame += .25
         elif direction == 'down':
-            self.y += 3
+            self.rect.y += 3
             self.frame += .25
         elif direction == 'left':
             self.orientation = 'left'
-            self.x -= 3
+            self.rect.x -= 3
             self.frame += .25
         elif direction == 'right':
             self.orientation = 'right'
-            self.x += 3
+            self.rect.x += 3
             self.frame += .25
 
 
