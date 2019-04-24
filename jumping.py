@@ -13,12 +13,18 @@ class Player(pygame.sprite.Sprite):
         
 
         self.direction = 'right'
-        self.peng_anim = []
-        self.frame = 1
-        
+        self.walk_anim = []
         for i in range(4):
-            self.peng_anim.append(pygame.image.load(f'./images/penguin_walk0{i+1}.png'))
+            self.walk_anim.append(pygame.image.load(f'./images/penguin_walk0{i+1}.png'))
+        self.frame = 1
+
+        self.jump_anim = []
+        for i in range(3):
+            self.jump_anim.append(pygame.image.load(f'./images/penguin_jump0{i+1}.png'))
+        self.jump_frame = 0
         
+        
+
         self.on_ground = True # needed if multiple platforms...player could be falling!
         self.is_jumping = False
         self.gravity = .5 # The lower this value, the higher the jump
@@ -31,8 +37,15 @@ class Player(pygame.sprite.Sprite):
             self.y = self.ground
 
     def blit(self, screen):
-        f = int(self.frame)%4
-        self.player_image = self.peng_anim[f]
+        if not self.is_jumping:
+            f = int(self.frame)%4
+            self.player_image = self.walk_anim[f]
+        else:
+            # there are 3 different parts to the jump
+            # animation - only one working right now
+            self.player_image = self.jump_anim[1] 
+
+            
         if self.direction == 'right':
             screen.blit(self.player_image,(self.x,self.y))
         elif self.direction == 'left':
@@ -54,9 +67,7 @@ class Player(pygame.sprite.Sprite):
             self.direction = 'right'
             self.x += 3
             self.frame += .25
-
-    
-
+   
 
 class JumpGame:
     windowWidth = 640
