@@ -36,7 +36,7 @@ class Player(pygame.sprite.Sprite):
         if self.direction == 'right':
             screen.blit(self.player_image,(self.x,self.y))
         elif self.direction == 'left':
-            screen.blit(pygame.transform.flip(self.player_image),(self.x,self.y))
+            screen.blit(pygame.transform.flip(self.player_image,True,False),(self.x,self.y))
         self.rect = self.player_image.get_rect()
 
     def walk(self, direction):
@@ -47,11 +47,11 @@ class Player(pygame.sprite.Sprite):
             self.y += 3
             self.frame += .25
         elif direction == 'left':
-            self.orientation = 'left'
+            self.direction = 'left'
             self.x -= 3
             self.frame += .25
         elif direction == 'right':
-            self.orientation = 'right'
+            self.direction = 'right'
             self.x += 3
             self.frame += .25
 
