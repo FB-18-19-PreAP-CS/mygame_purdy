@@ -19,6 +19,9 @@ class Game:
         self.room_types = ['street','forrest']
         self.curr_type = 0  
         self.font = pygame.font.SysFont("arial",24)
+        self.score = 0
+        self.high_score = 0
+        self.screen_number = 1
 
     def gen_fish(self):
         for i in range(3):
@@ -29,8 +32,17 @@ class Game:
         self.gen_fish()
         self.bgmusic.play(-1)
         while not done:
+            if self.screen_number == 21:
+                if self.score > self.high_score:
+                    print('new high score!')
+                    self.high_score = self.score
+                done = True
+                continue
+                gameover = self.fond.render("GAME OVER!")
+                self.screen.blit(score_text,(WIDTH//2,HEIGHT//2))
+
             self.screen.fill((0,0,0))
-            score_text = self.font.render(f"Hunger: {self.character.hunger}",True,(255,255,255))
+            score_text = self.font.render(f"Score: {self.score}",True,(255,255,255))
             self.screen.blit(score_text,(0,0))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -42,10 +54,10 @@ class Game:
         
             if pressed[pygame.K_DOWN]:
                 self.character.walk('down')
-            if pressed[pygame.K_LEFT]:
-                self.character.walk('left')
-            if pressed[pygame.K_RIGHT]:
-                self.character.walk('right')
+            # if pressed[pygame.K_LEFT]:
+            #     self.character.walk('left')
+            #if pressed[pygame.K_RIGHT]:
+            self.character.walk('right')
 
 
             
@@ -56,7 +68,7 @@ class Game:
 
             for f in self.fish:
                 if self.character.rect.colliderect(f):
-                    self.character.hunger -= 50
+                    self.score += 50
                     self.fish.remove(f)
 
             for f in self.fish:
@@ -75,6 +87,8 @@ class Game:
     ## TODO: Add animation in each direction
     def check_edge(self):
         if self.character.rect.x > WIDTH:
+            self.screen_number += 1
+            self.score -= 50 * len(self.fish)
             next_clock = pygame.time.Clock()
             frame_count = 0
             line_x = 0
@@ -180,7 +194,7 @@ class Penguin(pygame.sprite.Sprite):
             screen.blit(pygame.transform.flip(self.peng_anim[f],True,False),(self.rect.x,self.rect.y))
 
     def walk(self, direction):
-        self.hunger += 1
+        #self.hunger += 1
         if direction == 'up':
             self.rect.y -= 3
             self.frame += .25
