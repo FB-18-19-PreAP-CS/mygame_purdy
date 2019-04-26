@@ -21,7 +21,7 @@ showLabel(instructions)
 
 ground = 575 # height of ground
 
-xPos = 100
+xPos = 300
 yPos = 575
 
 xSpeed = 0
@@ -46,13 +46,21 @@ while True:
         if not jumping:
             changeSpriteImage(penguin,frame)
         transformSprite(penguin,0,1,hflip=True)
-        xPos -= 3
+        if xPos <= 300:
+            xPos = 300
+            scrollBackground(3,0)
+        else:
+            xPos -= 3
 
     if keyPressed("right"):
         direction = 'right'
         if not jumping:
             changeSpriteImage(penguin,frame)
-        xPos += 3
+        if xPos >= 600:
+            xPos = 600
+            scrollBackground(-3,0)
+        else:
+            xPos += 3
 
     if keyPressed("up"):
         if direction == 'right':
