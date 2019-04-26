@@ -40,7 +40,7 @@ ground = 575 # height of ground
 xPos = 300
 yPos = 575
 
-xSpeed = 0
+xSpeed = 3
 ySpeed = 0
 
 direction = 'right'
@@ -48,6 +48,7 @@ direction = 'right'
 jumping = False
 frame = 0
 nextFrame = clock()
+boosted = 0
 
 while True:
 
@@ -67,10 +68,19 @@ while True:
             xPos = 300
             scrollBackground(3,0)
             for f in fish:
-                moveSprite(f,f.rect[0]+3,f.rect[1])
+                moveSprite(f,f.rect[0]+xSpeed,f.rect[1])
 
         else:
-            xPos -= 3
+            xPos -= xSpeed
+
+    if keyPressed("space"):
+        if boosted ==0 or clock() - boosted > 5000:
+            print('here')
+            xSpeed = 10
+            boosted = clock()
+    
+    if clock() - boosted > 2000:
+        xSpeed = 3
 
     if keyPressed("right"):
         direction = 'right'
@@ -80,9 +90,9 @@ while True:
             xPos = 600
             scrollBackground(-3,0)
             for f in fish:
-                moveSprite(f,f.rect[0]-3,f.rect[1])
+                moveSprite(f,f.rect[0]-xSpeed,f.rect[1])
         else:
-            xPos += 3
+            xPos += xSpeed
 
     if keyPressed("up"):
         if direction == 'right':
