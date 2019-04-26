@@ -33,6 +33,9 @@ instructions = makeLabel("Catch all the fish!",40,325,10)
 showLabel(instructions)
 
 score = 0
+time = 10
+timeLabel = makeLabel(f"{time}",40,500,700,"green")
+showLabel(timeLabel)
 scoreLabel = makeLabel(f"Fish Remaining: {num_fish - score}",24,700,10)
 showLabel(scoreLabel)
 ground = 575 # height of ground
@@ -49,9 +52,27 @@ jumping = False
 frame = 0
 nextFrame = clock()
 boosted = 0
+timeClock = clock()
+
 
 while True:
-
+    if score == 20:
+        winLabel = makeLabel("YOU WIN!",50,400,700,"green")
+        hideLabel(timeLabel)
+        showLabel(winLabel)
+        break
+    if clock() - timeClock >= 1000:
+        time -= 1
+        timeClock = clock()
+        if time < 5:
+            changeLabel(timeLabel,f"{time}","red")
+        else:
+            changeLabel(timeLabel,f"{time}","green")
+        if time == 0:
+            hideLabel(timeLabel)
+            loseLabel = makeLabel("YOU LOSE!",50,400,700,"red")
+            showLabel(loseLabel)
+            break
     if clock() > nextFrame:
         frame = (frame+1)%4
         nextFrame += 80
@@ -66,7 +87,7 @@ while True:
         if xPos <= 300:
 
             xPos = 300
-            scrollBackground(3,0)
+            scrollBackground(xSpeed,0)
             for f in fish:
                 moveSprite(f,f.rect[0]+xSpeed,f.rect[1])
 
@@ -88,7 +109,7 @@ while True:
             changeSpriteImage(penguin,frame)
         if xPos >= 600:
             xPos = 600
-            scrollBackground(-3,0)
+            scrollBackground(-xSpeed,0)
             for f in fish:
                 moveSprite(f,f.rect[0]-xSpeed,f.rect[1])
         else:
