@@ -13,7 +13,7 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Walking Simulator")
         self.clock = pygame.time.Clock()
-        self.bgmusic = pygame.mixer.Sound('/home/purdy/PreAPCS/mygame_purdy/sounds/main_theme.ogg')
+        self.bgmusic = pygame.mixer.Sound('./sounds/main_theme.ogg')
         self.character = Penguin()
         self.fish = pygame.sprite.Group()
         self.room_types = ['street','forrest']
