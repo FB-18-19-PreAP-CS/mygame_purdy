@@ -1,9 +1,11 @@
 from pygame_functions import *
 from random import randint
 
+
 setAutoUpdate(False)
 
 screenSize(1000, 750)
+pygame.display.set_caption("Ice Fishing") # has to go after screenSize
 setBackgroundImage(["./images/bg-icebergs-1.png","./images/bg-icebergs-1.png"])
 num_fish = 20
 fish = []
