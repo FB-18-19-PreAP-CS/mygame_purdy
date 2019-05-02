@@ -40,7 +40,8 @@ scoreLabel = makeLabel(f"Fish Remaining: {num_fish - score}",24,700,10)
 showLabel(scoreLabel)
 ground = 575 # height of ground
 
-xPos = 300
+# changing default starting position
+xPos = 350
 yPos = 575
 
 xSpeed = 3
@@ -78,6 +79,7 @@ while True:
         nextFrame += 80
 
     moveSprite(penguin,xPos,yPos,True) # True here makes it base position off of center of the sprite
+
 
     if keyPressed("left"):
         direction = 'left'
