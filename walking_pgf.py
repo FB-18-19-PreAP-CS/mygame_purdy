@@ -54,6 +54,8 @@ nextFrame = clock()
 boosted = 0
 timeClock = clock()
 
+# Here are some changes to my branch I want to keep them
+print('I changed this code!')
 
 while True:
     if score == 20:
