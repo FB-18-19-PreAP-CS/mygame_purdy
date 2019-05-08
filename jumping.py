@@ -38,7 +38,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.y = self.ground
 
     def blit(self, screen):
-        if not self.is_jumping:
+        if self.on_ground or not self.is_jumping:
             f = int(self.frame)%4
             self.player_image = self.walk_anim[f]
         else:
@@ -91,7 +91,9 @@ class JumpGame:
         pygame.display.set_caption("Jump Demo")
         self.clock = pygame.time.Clock()
         self.player = Player(self.windowWidth//2,self.windowHeight-100)
-        self.block = Block(100,300,64,64,(255,0,0))
+        self.blocks = []
+        self.blocks.append(Block(100,300,64,64,(255,0,0)))
+        self.blocks.append(Block(300,200,64,64,(0,255,0)))
 
     def draw_ground(self):
         pygame.draw.rect(self.screen,(0,255,0),pygame.rect.Rect(0,self.windowHeight-100,self.windowWidth,100))
@@ -99,7 +101,8 @@ class JumpGame:
     def start(self):
         while True:
             self.draw_ground()
-            pygame.draw.rect(self.screen, self.block.color, self.block.rect)
+            for block in self.blocks:
+                pygame.draw.rect(self.screen, block.color, block.rect)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -107,7 +110,7 @@ class JumpGame:
 
             pressed = pygame.key.get_pressed()
 
-            if pressed[pygame.K_SPACE] and not self.player.is_jumping and self.player.on_ground:
+            if pressed[pygame.K_SPACE] and not self.player.is_jumping:
                 # jump!
                 self.jump_sound.play()
                 self.player.on_ground = False
@@ -115,27 +118,50 @@ class JumpGame:
                 self.player.velocity = 8
 
             if pressed[pygame.K_LEFT]:
-                self.player.walk('left')
+                for block in self.blocks:
+                    if not self.player.rect.colliderect(block.rect):
+                        self.player.walk('left')
+                    else:
+                        self.player.rect.x += 5
 
             if pressed[pygame.K_RIGHT]:
-                self.player.walk('right')
+                for block in self.blocks:
+                    if not self.player.rect.colliderect(block.rect):
+                        self.player.walk('right')
+                    else:
+                        self.player.rect.x -= 5
             
-            if self.player.rect.colliderect(self.block.rect):
-                print('collision')
+           
+
             if self.player.is_jumping:
-                if self.player.velocity > 0:
-                    while self.player.rect.colliderect(self.block.rect):
-                        self.player.rect.y -= 1
-                        self.player.velocity = 0
-                        self.is_jumping = False
-                elif self.player.velocity < 0:
-                    while self.player.rect.colliderect(self.block.rect):
-                        self.player.rect.y += 1
-                        self.player.velocity = 0
-                        self.is_jumping = False
+                if self.player.velocity < 0:
+                    for block in self.blocks:
+                        if self.player.rect.colliderect(block.rect):
+                        
+                            if self.player.rect.y+self.player.rect.height >= block.rect.y:
+                                print('should stop')
+                                self.player.rect.y -= 10
+                                self.player.velocity = 0
+                                self.player.is_jumping = False
+                                
+                                continue
+                            else:
+                                print('fall down')
+                                self.player.rect.y += 10
+                                self.player.velocity *= -1
+                        
                 self.player.rect.y -= self.player.velocity
                 self.player.velocity -= self.player.gravity 
                 self.player.check_on_ground()
+
+
+            elif not self.player.on_ground:
+                for block in self.blocks:
+                    if self.player.rect.x >= block.rect.x and self.player.rect.x <= block.rect.x + block.rect.width:
+                        print('on block')
+                    else:
+                        self.player.is_jumping = True
+
             
             self.player.blit(self.screen) # draw the player on the screen
             
