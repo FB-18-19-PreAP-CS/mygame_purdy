@@ -121,14 +121,18 @@ class JumpGame:
                 for block in self.blocks:
                     # if not self.player.rect.colliderect(block.rect):
                     # TODO: fix block collision
-                    if self.player.rect.x < block.rect.x or self.player.rect.x > block.rect.x + block.rect.width:
+                    if (self.player.rect.x < block.rect.x or self.player.rect.x > block.rect.x + block.rect.width) or \
+                       (self.player.rect.y < block.rect.y or self.player.rect.y > block.rect.y + block.rect.height):
                         self.player.walk('left')
                     else:
                         self.player.rect.x += 6
+                    
 
             if pressed[pygame.K_RIGHT]:
                 for block in self.blocks:
-                    if not self.player.rect.colliderect(block.rect):
+                    # THIS DOES NOT WORK!
+                    if (self.player.rect.x < block.rect.x and self.player.rect.x + self.player.rect.width < block.rect.x or self.player.rect.x > block.rect.x + block.rect.width) or \
+                       (self.player.rect.y < block.rect.y or self.player.rect.y > block.rect.y + block.rect.height):
                         self.player.walk('right')
                     else:
                         self.player.rect.x -= 6
