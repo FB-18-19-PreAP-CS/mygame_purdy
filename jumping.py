@@ -144,7 +144,7 @@ class JumpGame:
                     for block in self.blocks:
                         if self.player.rect.colliderect(block.rect):
                         
-                            if self.player.rect.y+self.player.rect.height >= block.rect.y:
+                            if self.player.rect.y+self.player.rect.height <= block.rect.y:
                                 print('should stop')
                                 self.player.rect.y -= 10
                                 self.player.velocity = 0
@@ -159,8 +159,9 @@ class JumpGame:
                 elif self.player.velocity >= 0:
                     for block in self.blocks:
                         if self.player.rect.colliderect(block.rect):
-                            self.player.rect.y += 10
-                            self.player.velocity *= -1
+                            if self.player.rect.y+self.player.rect.height >= block.rect.y + block.rect.height:
+                                self.player.rect.y += 10
+                                self.player.velocity = abs(self.player.velocity)*-1
 
 
                 self.player.rect.y -= self.player.velocity
