@@ -119,17 +119,19 @@ class JumpGame:
 
             if pressed[pygame.K_LEFT]:
                 for block in self.blocks:
-                    if not self.player.rect.colliderect(block.rect):
+                    # if not self.player.rect.colliderect(block.rect):
+                    # TODO: fix block collision
+                    if self.player.rect.x < block.rect.x or self.player.rect.x > block.rect.x + block.rect.width:
                         self.player.walk('left')
                     else:
-                        self.player.rect.x += 5
+                        self.player.rect.x += 6
 
             if pressed[pygame.K_RIGHT]:
                 for block in self.blocks:
                     if not self.player.rect.colliderect(block.rect):
                         self.player.walk('right')
                     else:
-                        self.player.rect.x -= 5
+                        self.player.rect.x -= 6
             
            
 
@@ -149,7 +151,14 @@ class JumpGame:
                                 print('fall down')
                                 self.player.rect.y += 10
                                 self.player.velocity *= -1
-                        
+
+                elif self.player.velocity >= 0:
+                    for block in self.blocks:
+                        if self.player.rect.colliderect(block.rect):
+                            self.player.rect.y += 10
+                            self.player.velocity *= -1
+
+
                 self.player.rect.y -= self.player.velocity
                 self.player.velocity -= self.player.gravity 
                 self.player.check_on_ground()
